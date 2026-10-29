@@ -10,10 +10,10 @@ const PORT = process.env.PORT || 3000;
            {id:3, Title : "Nextjs", Description: "This is your third task", Status : "Not Started Yet"}
     ];
 
-app.get("/api/Tasks", (req, res) => {
+app.get("/api/projects/:projectId/tasks", (req, res) => {
    res.json(tasks);           
 });
-app.post("/api/Tasks", (req, res) => {
+app.post("/api/projects/:projectId/tasks", (req, res) => {
     const newTask = {
         id: tasks.length + 1,
         Title: req.body.Title,
@@ -29,7 +29,7 @@ app.post("/api/Tasks", (req, res) => {
     });
 });
 
-app.put("/api/Tasks/:id", (req, res) => {
+app.put("/api/projects/:projectId/tasks/:id", (req, res) => {
     const id = Number(req.params.id);
 
     const task = tasks.find(task => task.id === id);
