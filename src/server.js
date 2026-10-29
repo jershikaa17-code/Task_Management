@@ -1,14 +1,35 @@
 require("dotenv").config();
 const express = require("express");
+const pool = require("./db");
 const app = express();
 app.use(express.json());
 const PORT = process.env.PORT || 3000;
 
- const tasks= [
-           {id:1, Title : "Nodejs", Description: "This is your first task", Status : "Completed"},
-           {id:2, Title : "Task management API", Description: "This is your second task", Status : "In-progress"},
-           {id:3, Title : "Nextjs", Description: "This is your third task", Status : "Not Started Yet"}
-    ];
+ 
+app.post("/api/projects/:projectId/tasks", async (req, res) => {
+    try {
+        const { projectId } = req.params;
+        const { title, description } = req.body;
+
+        const result = await pool.query(
+            `INSERT INTO tasks (project_id, title, description, created_by)
+             VALUES ($1, $2, $3, $4)
+             RETURNING *`,
+            [projectId, title, description || null, 1]
+        );
+
+        res.status(201).json({
+            message: "Task created successfully",
+            task: result.rows[0]
+        });
+    } catch (error) {
+        console.error(error.message);
+        res.status(500).json({
+            message: "Failed to create task"
+        });
+    }
+});
+
 
 app.get("/api/projects/:projectId/tasks", (req, res) => {
    res.json(tasks);           
