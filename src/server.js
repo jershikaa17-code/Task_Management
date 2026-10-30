@@ -5,35 +5,41 @@ const app = express();
 app.use(express.json());
 const PORT = process.env.PORT || 3000;
 
- const tasks= [
-           {id:1, Title : "Nodejs", Description: "This is your first task", Status : "Completed"},
-           {id:2, Title : "Task management API", Description: "This is your second task", Status : "In-progress"},
-           {id:3, Title : "Nextjs", Description: "This is your third task", Status : "TODO"}
-    ];
 
-app.get("/api/projects/:projectId/tasks", (req, res) => {
-   res.json(tasks);           
-});
-app.post("/api/projects/:projectId/tasks", (req, res) => {
-    const newTask = {
-        id: tasks.length + 1,
-        Title: req.body.Title,
-        Description: req.body.Description,
-        Status: "TODO"
-    };
+app.get("/api/projects/:projectId/tasks", async (req, res) => {
+    const { projectId } = req.params;
 
-    tasks.push(newTask);
+    const result = await pool.query(
+        "SELECT * FROM tasks WHERE project_id = $1",
+        [projectId]
+    );
+    res.json(result.rows);
+});          
+
+app.post("/api/projects/:projectId/tasks", async (req, res) => {
+    const { projectId } = req.params;
+    const { Title, Description } = req.body;
+
+    const result = await pool.query(
+        "INSERT INTO tasks (project_id, title, description) VALUES ($1, $2, $3) RETURNING *",
+        [projectId, Title, Description]
+    );
 
     res.status(201).json({
         message: "Task created successfully",
-        task: newTask
+        task: result.rows[0]
     });
 });
 
 app.put("/api/projects/:projectId/tasks/:id", (req, res) => {
     const id = Number(req.params.id);
+ const { Title, Description, status } = req.body;
 
-    const task = tasks.find(task => task.id === id);
+    const result = pool.query(
+        "UPDATE tasks SET Title = $1, Description = $2, status = $3 WHERE id = $4 RETURNING *",
+        [Title, Description, status, id]
+    );
+    const task = result.rows[0];
 
     if (!task) {
         return res.status(404).json({ message: "Task not found" });
