@@ -3,7 +3,7 @@ const express = require("express");
 const pool = require("./db");
 const app = express();
 app.use(express.json());
-const PORT = process.env.PORT || 3000;
+const PORT = 3000;
 
 
 app.get("/api/projects/:projectId/tasks", async (req, res) => {
@@ -31,11 +31,11 @@ app.post("/api/projects/:projectId/tasks", async (req, res) => {
     });
 });
 
-app.put("/api/projects/:projectId/tasks/:id", (req, res) => {
+app.put("/api/projects/:projectId/tasks/:id", async (req, res) => {
     const id = Number(req.params.id);
  const { Title, Description, status } = req.body;
 
-    const result = pool.query(
+    const result = await pool.query(
         "UPDATE tasks SET Title = $1, Description = $2, status = $3 WHERE id = $4 RETURNING *",
         [Title, Description, status, id]
     );
@@ -55,6 +55,16 @@ app.put("/api/projects/:projectId/tasks/:id", (req, res) => {
     });
 });
 
+app.delete("/api/projects/:projectId/tasks/:id", async (req, res) => {
+    const id = req.params.id;
+    const result = await pool.query(
+        "DELETE FROM tasks WHERE id = $1 RETURNING *",
+        [id]
+    );
+    res.json({
+        message: "Task deleted successfully"
+    });
+});
 
 app.listen(PORT, () => {
     console.log(`Server is running on ${PORT}`);
