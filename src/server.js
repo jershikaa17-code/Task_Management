@@ -8,7 +8,7 @@ const PORT = process.env.PORT || 3000;
  const tasks= [
            {id:1, Title : "Nodejs", Description: "This is your first task", Status : "Completed"},
            {id:2, Title : "Task management API", Description: "This is your second task", Status : "In-progress"},
-           {id:3, Title : "Nextjs", Description: "This is your third task", Status : "Not Started Yet"}
+           {id:3, Title : "Nextjs", Description: "This is your third task", Status : "TODO"}
     ];
 
 app.get("/api/projects/:projectId/tasks", (req, res) => {
@@ -19,7 +19,7 @@ app.post("/api/projects/:projectId/tasks", (req, res) => {
         id: tasks.length + 1,
         Title: req.body.Title,
         Description: req.body.Description,
-        Status: "Not Started Yet"
+        Status: "TODO"
     };
 
     tasks.push(newTask);
