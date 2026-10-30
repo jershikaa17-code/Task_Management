@@ -18,11 +18,11 @@ app.get("/api/projects/:projectId/tasks", async (req, res) => {
 
 app.post("/api/projects/:projectId/tasks", async (req, res) => {
     const { projectId } = req.params;
-    const { Title, Description } = req.body;
+    const { title, description } = req.body;
 
     const result = await pool.query(
         "INSERT INTO tasks (project_id, title, description) VALUES ($1, $2, $3) RETURNING *",
-        [projectId, Title, Description]
+        [projectId, title, description]
     );
 
     res.status(201).json({
@@ -33,11 +33,11 @@ app.post("/api/projects/:projectId/tasks", async (req, res) => {
 
 app.put("/api/projects/:projectId/tasks/:id", async (req, res) => {
     const id = Number(req.params.id);
- const { Title, Description, status } = req.body;
+ const { title, description, status } = req.body;
 
     const result = await pool.query(
-        "UPDATE tasks SET Title = $1, Description = $2, status = $3 WHERE id = $4 RETURNING *",
-        [Title, Description, status, id]
+        "UPDATE tasks SET title = $1, description = $2, status = $3 WHERE id = $4 RETURNING *",
+        [title, description, status, id]
     );
     const task = result.rows[0];
 
@@ -45,9 +45,9 @@ app.put("/api/projects/:projectId/tasks/:id", async (req, res) => {
         return res.status(404).json({ message: "Task not found" });
     }
 
-    task.Title = req.body.Title;
-    task.Description = req.body.Description;
-    task.Status = req.body.Status;
+    task.title = req.body.title;
+    task.description = req.body.description;
+    task.status = req.body.status;
 
     res.json({
         message: "Task updated successfully",
