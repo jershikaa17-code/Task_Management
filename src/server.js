@@ -7,7 +7,7 @@ const PORT = 3000;
 
 
 app.get("/api/projects/:projectId/tasks", async (req, res) => {
-    const { projectId } = req.params;
+    const projectId = req.params.projectId;
 
     const result = await pool.query(
         "SELECT * FROM tasks WHERE project_id = $1",
@@ -17,8 +17,9 @@ app.get("/api/projects/:projectId/tasks", async (req, res) => {
 });          
 
 app.post("/api/projects/:projectId/tasks", async (req, res) => {
-    const { projectId } = req.params;
-    const { title, description } = req.body;
+    const projectId = req.params.projectId;
+   const title = req.body.title;
+const description = req.body.description;
 
     const result = await pool.query(
         "INSERT INTO tasks (project_id, title, description) VALUES ($1, $2, $3) RETURNING *",
@@ -33,7 +34,10 @@ app.post("/api/projects/:projectId/tasks", async (req, res) => {
 
 app.put("/api/projects/:projectId/tasks/:id", async (req, res) => {
     const id = Number(req.params.id);
- const { title, description, status } = req.body;
+    const projectId = req.params.projectId;
+    const title = req.body.title;
+    const description = req.body.description;
+    const status = req.body.status;
 
     const result = await pool.query(
         "UPDATE tasks SET title = $1, description = $2, status = $3 WHERE id = $4 RETURNING *",
