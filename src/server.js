@@ -9,7 +9,7 @@ const PORT = 3000;
 const JWT_SECRET = process.env.JWT_SECRET;
 
 const users = [
-  { id: 1, username: 'Ananya', password: 'jershika', role: 'user' }
+  { id: 1, username: 'Ananya', password: 'Hello', role: 'user' }
 ];
 
 app.post('/login', (req, res) => {
